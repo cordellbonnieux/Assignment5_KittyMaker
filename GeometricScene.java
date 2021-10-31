@@ -3,6 +3,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -28,7 +29,7 @@ public class GeometricScene extends Application {
 		
 		//create pane and add scene components
 		Pane root = new Pane();
-		root.getChildren().addAll(new Background(500, 300));
+		root.getChildren().addAll(new Background(300, 300), new Ground());
 		
 		// add root pane to a scene
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -43,16 +44,18 @@ public class GeometricScene extends Application {
 	
 	private class Background extends Group{
 		private Rectangle backdrop;
+		private Ellipse moon;
 		private Polygon pyramidLeft;
 		private Polygon pyramidRight;
-		private Polygon foregroundLeft;
-		private Polygon foregroundRight;
 		
 		public Background(double px, double py) {
 			this.backdrop = new Rectangle((double)WIDTH, (double)HEIGHT);
 			this.backdrop.setFill(Color.DARKBLUE);
 			this.backdrop.setY(0);
 			this.backdrop.setX(0);
+			
+			this.moon = new Ellipse((double)WIDTH-250, 250.00, 125.00, 125.00);
+			this.moon.setFill(Color.ORANGE);
 			
 			this.pyramidLeft = new Polygon();
 			this.pyramidLeft.setFill(Color.DEEPPINK);
@@ -70,6 +73,15 @@ public class GeometricScene extends Application {
 					px+400, (double)HEIGHT,
 			});
 			
+			this.getChildren().addAll(backdrop, moon, pyramidLeft, pyramidRight);
+		}
+	}
+	
+	private class Ground extends Group {
+		private Polygon foregroundLeft;
+		private Polygon foregroundRight;
+		
+		public Ground() {
 			this.foregroundLeft = new Polygon();
 			this.foregroundLeft.setFill(Color.TAN);
 			this.foregroundLeft.getPoints().addAll(new Double[] {
@@ -86,10 +98,8 @@ public class GeometricScene extends Application {
 					(double)WIDTH, (double)HEIGHT,
 			});
 			
-			this.getChildren().addAll(backdrop, pyramidLeft, pyramidRight, foregroundLeft, foregroundRight);
+			this.getChildren().addAll(foregroundLeft, foregroundRight);
 		}
-		
-		
 	}
 
 }

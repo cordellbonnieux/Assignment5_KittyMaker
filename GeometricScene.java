@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -29,7 +30,7 @@ public class GeometricScene extends Application {
 		
 		//create pane and add scene components
 		Pane root = new Pane();
-		root.getChildren().addAll(new Background(300, 300), new Ground(600, 400, 500), new Kitty(Color.PURPLE));
+		root.getChildren().addAll(new Background(300, 300), new Ground(), new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), 200, 800));
 		
 		// add root pane to a scene
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -49,56 +50,66 @@ public class GeometricScene extends Application {
 		private Polygon pyramidRight;
 		
 		public Background(double px, double py) {
-			this.backdrop = new Rectangle((double)WIDTH, (double)HEIGHT);
-			this.backdrop.setFill(Color.DARKBLUE);
-			this.backdrop.setY(0);
-			this.backdrop.setX(0);
+			backdrop = new Rectangle((double)WIDTH, (double)HEIGHT);
+			backdrop.setFill(Color.rgb(0, 20, 64));
+			backdrop.setY(0);
+			backdrop.setX(0);
 			
-			this.moon = new Ellipse((double)WIDTH-250, 250.00, 125.00, 125.00);
-			this.moon.setFill(Color.ORANGE);
+			moon = new Ellipse((double)WIDTH-250, 250.00, 125.00, 125.00);
+			moon.setFill(Color.ORANGE);
 			
-			this.pyramidLeft = new Polygon();
-			this.pyramidLeft.setFill(Color.DEEPPINK);
-			this.pyramidLeft.getPoints().addAll(new Double[] {
+			pyramidLeft = new Polygon();
+			pyramidLeft.setStroke(Color.rgb(19, 82, 171));
+			pyramidLeft.setStrokeWidth(2);
+			pyramidLeft.setFill(Color.rgb(150, 111, 214));
+			pyramidLeft.getPoints().addAll(new Double[] {
 					px, py,
 					px+75, (double)HEIGHT,
 					px-400, (double)HEIGHT,
 			});
 			
-			this.pyramidRight = new Polygon();
-			this.pyramidRight.setFill(Color.MEDIUMPURPLE);
-			this.pyramidRight.getPoints().addAll(new Double[] {
+			pyramidRight = new Polygon();
+			pyramidRight.setStroke(Color.rgb(19, 82, 171));
+			pyramidRight.setStrokeWidth(2);
+			pyramidRight.setFill(Color.rgb(183, 165, 217));
+			pyramidRight.getPoints().addAll(new Double[] {
 					px, py,
 					px+75, (double)HEIGHT,
 					px+400, (double)HEIGHT,
 			});
 			
-			this.getChildren().addAll(backdrop, moon, pyramidLeft, pyramidRight);
+			getChildren().addAll(backdrop, moon, pyramidLeft, pyramidRight);
 		}
 	}
 	
 	private class Ground extends Group {
 		private Polygon groundLeft;
 		private Polygon groundRight;
+		private final double heightLeft = 600.00;
+		private final double heightRight = 500.00;
 		
-		public Ground(double leftY, double intersection, double RightY) {
-			this.groundLeft = new Polygon();
-			this.groundLeft.setFill(Color.TAN);
-			this.groundLeft.getPoints().addAll(new Double[] {
-					0.00, leftY,
+		public Ground() {
+			groundLeft = new Polygon();
+			groundLeft.setFill(Color.rgb(255, 243, 222));
+			groundLeft.getPoints().addAll(new Double[] {
+					0.00, heightLeft,
 					0.00, (double)HEIGHT,
-					intersection, (double)HEIGHT,
+					400.00, (double)HEIGHT,
 			});
 
-			this.groundRight = new Polygon();
-			this.groundRight.setFill(Color.TAN);
-			this.groundRight.getPoints().addAll(new Double[] {
-					intersection, (double)HEIGHT,
-					(double)WIDTH, RightY,
+			groundRight = new Polygon();
+			groundRight.setFill(Color.rgb(255, 243, 222));
+			groundRight.getPoints().addAll(new Double[] {
+					400.00, (double)HEIGHT,
+					(double)WIDTH, heightRight,
 					(double)WIDTH, (double)HEIGHT,
 			});
 			
-			this.getChildren().addAll(groundLeft, groundRight);
+			getChildren().addAll(groundLeft, groundRight);
+		}
+		
+		public double getHeight() {
+			return (this.heightLeft > this.heightRight) ? this.heightRight : this.heightLeft;
 		}
 	}
 	
@@ -110,35 +121,42 @@ public class GeometricScene extends Application {
 		private Ellipse head;
 		private Ellipse paw2;
 		private Ellipse paw4;
-		private Polygon earLeft;
-		private Polygon earRight;
 		private Ellipse eyeLeft;
 		private Ellipse eyeRight;
+		private Polygon earLeft;
+		private Polygon earRight;
+		private Line innerEyeRight;
+		private Line innerEyeLeft;
+
 		
-		public Kitty(Color mainColor) {
-			// centerX, centerY, radiusX, radiusY
-			body = new Ellipse(470,570,90,40);
-			paw1 = new Ellipse(400,600,15,10);
-			paw3 = new Ellipse(495,605,15,10);
-			tail = new Ellipse(550,530,12,52);
-			head = new Ellipse(410,550,40,30);
-			paw2 = new Ellipse(440,605,15,10);
-			paw4 = new Ellipse(520,605,15,10);
+		public Kitty(Color mainColor, Color eyeColor, double centerX, double centerY) {
+			body = new Ellipse(centerX,centerY,90,40);
+			paw1 = new Ellipse(centerX-70,centerY+30,15,10);
+			paw3 = new Ellipse(centerX+25,centerY+35,15,10);
+			tail = new Ellipse(centerX+80,centerY-40,12,52);
+			head = new Ellipse(centerX-60,centerY-20,40,30);
+			paw2 = new Ellipse(centerX-30,centerY+35,15,10);
+			paw4 = new Ellipse(centerX+50,centerY+35,15,10);
 			earLeft = new Polygon();
 			earRight = new Polygon();
-			eyeLeft = new Ellipse(390,550,15,10);
-			eyeRight = new Ellipse(425,550,15,10);
+			eyeLeft = new Ellipse(centerX-80,centerY-20,15,10);
+			eyeRight = new Ellipse(centerX-45,centerY-20,15,10);
+			innerEyeLeft = new Line(centerX-80,centerY-28,centerX-80,centerY-12);
+			innerEyeRight = new Line(centerX-45,centerY-28,centerX-45,centerY-12);
+			
+			innerEyeRight.setStrokeWidth(4);
+			innerEyeLeft.setStrokeWidth(4);
 			
 			earLeft.getPoints().addAll(new Double[] {
-					365.00, 512.00,
-					395.00, 522.00,
-					370.00, 542.00
+					centerX-105, centerY-58,
+					centerX-75, centerY-48,
+					centerX-95, centerY-28
 			});
 			
 			earRight.getPoints().addAll(new Double[] {
-					455.00, 512.00,
-					425.00, 522.00,
-					450.00, 542.00
+					centerX-15, centerY-58,
+					centerX-45, centerY-48,
+					centerX-20, centerY-28
 			});
 			
 			paw1.setFill(mainColor);
@@ -150,10 +168,10 @@ public class GeometricScene extends Application {
 			paw4.setFill(mainColor);
 			earLeft.setFill(mainColor);
 			earRight.setFill(mainColor);
-			eyeLeft.setFill(Color.YELLOW);
-			eyeRight.setFill(Color.YELLOW);
+			eyeLeft.setFill(eyeColor);
+			eyeRight.setFill(eyeColor);
 			
-			getChildren().addAll(paw1,paw3,tail,body,head,paw2,paw4,earLeft,earRight,eyeLeft,eyeRight);			
+			getChildren().addAll(paw1,paw3,tail,body,head,paw2,paw4,earLeft,earRight,eyeLeft,eyeRight,innerEyeLeft,innerEyeRight);			
 		}
 	}
 }

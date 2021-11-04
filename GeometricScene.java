@@ -35,17 +35,18 @@ public class GeometricScene extends Application {
 		stage.setTitle("Cordell's Geometric Scene");
 		
 		//create pane and scene components
-		Pane root = new Pane();
+		Pane root = new Pane(); 
 		
 		// add some components to display
 		Ground foreground = new Ground();
 		
 		// create random coordinates for kitty
-		Kitty cat = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize());
+		Kitty sickie = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize());
 		Kitty moro = new Kitty(Color.BLACK, Color.YELLOW, randomX(), randomY(foreground), randomSize());
+		Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize());
 		
 		// add components to pane
-		root.getChildren().addAll(new Background(300, 300), foreground, cat, moro);
+		root.getChildren().addAll(new Background(300, 300), foreground, sickie, moro, sylvester);
 		
 		// add root pane to a scene
 		Scene scene = new Scene(root, WIDTH, HEIGHT);

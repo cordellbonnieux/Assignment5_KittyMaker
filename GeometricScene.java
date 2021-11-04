@@ -1,12 +1,17 @@
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -18,7 +23,15 @@ import javafx.stage.Stage;
 public class GeometricScene extends Application {
 	private final int HEIGHT = 800;
 	private final int WIDTH = 1200;
+	//add controls as data members
+	private CheckBox pyramidCheckBox;
+	private CheckBox moonCheckBox;
+	private CheckBox starsCheckBox;
 	
+	/**
+	 * Launch Application
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
@@ -34,8 +47,23 @@ public class GeometricScene extends Application {
 		// add program title
 		stage.setTitle("Cordell's Geometric Scene");
 		
+		// 1. Create a border pane
+		BorderPane root = new BorderPane();
+		root.setPadding(new Insets(5));
+		// 2. create buttons to control back ground
+		Text topText = new Text("Toggle Background Elements:");
+		pyramidCheckBox = new CheckBox("Pyramid");
+		moonCheckBox = new CheckBox("Moon");
+		starsCheckBox = new CheckBox("Stars");
+		// 3. add those buttons to the top section
+		HBox topArea = new HBox(topText, pyramidCheckBox, moonCheckBox, starsCheckBox);
+		// 4. create a hbox to house the bottom elements
+		// 5. create radio buttons and button to spawn elements
+		// 6. add that whole package to the right side of the hbox
+		// 7. create a 'current sprites' view for the left side of hbox
+		
 		//create pane and scene components
-		Pane root = new Pane(); 
+		//Pane root = new Pane(); 
 		
 		// add some components to display
 		Ground foreground = new Ground();
@@ -46,7 +74,10 @@ public class GeometricScene extends Application {
 		Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize());
 		
 		// add components to pane
-		root.getChildren().addAll(new Background(300, 300), foreground, sickie, moro, sylvester);
+		Pane center = new Pane();
+		center.getChildren().addAll(new Background(300, 300), foreground, sickie, moro, sylvester);
+		root.setCenter(center);
+		root.setTop(topArea);
 		
 		// add root pane to a scene
 		Scene scene = new Scene(root, WIDTH, HEIGHT);

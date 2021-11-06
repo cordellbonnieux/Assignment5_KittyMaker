@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -37,7 +38,10 @@ public class GeometricScene extends Application {
 	// width and height for graphical image
 	private final int HEIGHT = 800;
 	private final int WIDTH = 1200;
+	// UI Elements
+	private BorderPane root = new BorderPane();
 	private Ground foreground = new Ground();
+	private Pane center = new Pane();
 	// top controls
 	private CheckBox pyramidCheckBox;
 	private CheckBox moonCheckBox;
@@ -77,25 +81,30 @@ public class GeometricScene extends Application {
 		
 
 		// 1. Create a border pane
-		BorderPane root = new BorderPane();
+		
 		root.setPadding(new Insets(10));
+		
+
+		
+		
+		
 		
 		HBox bottomArea = new HBox(get_bgControls(), get_kittyControls());
 		
 		
 		
 		// create random coordinates for kitty
-		Kitty sickie = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize(), randomSize());
-		Kitty moro = new Kitty(Color.BLACK, Color.YELLOW, randomX(), randomY(foreground), randomSize(), randomSize());
-		Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize(), randomSize());
+		//Kitty sickie = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize(), randomSize());
+		//Kitty moro = new Kitty(Color.BLACK, Color.YELLOW, randomX(), randomY(foreground), randomSize(), randomSize());
+		//Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize(), randomSize());
 		
-		kittyTracker.add(sickie);
-		kittyTracker.add(moro);
-		kittyTracker.add(sylvester);
+		//kittyTracker.add(sickie);
+		//kittyTracker.add(moro);
+		//kittyTracker.add(sylvester);
 		
-		// add components to pane
-		Pane center = new Pane();
-		center.getChildren().addAll(new Background(300, 300), foreground, sickie, moro, sylvester); //
+
+		
+		center.getChildren().addAll(new Background(300, 300), foreground);
 		center.setPrefHeight(HEIGHT);
 		center.setPrefWidth(WIDTH);
 		Rectangle clip = new Rectangle(0,0,WIDTH, HEIGHT);
@@ -112,8 +121,20 @@ public class GeometricScene extends Application {
 		bottomArea.setAlignment(Pos.CENTER_RIGHT);
 		
 		
+		// set event listeners
+		KittyChoices kittyType = new KittyChoices();
+		tall.setOnAction(kittyType);
+		smol.setOnAction(kittyType);
+		thicc.setOnAction(kittyType);
+		hungry.setOnAction(kittyType);
+		
+		KittyCreator spawnKitty = new KittyCreator();
+		createBtn.setOnAction(spawnKitty);
+		
+		
+		
 		Scene scene = new Scene(root);
-		stage.setTitle("Cordell's Geometric Scene");
+		stage.setTitle("Kitty Maker");
 		stage.setScene(scene);
 		stage.show();
 		
@@ -126,16 +147,17 @@ public class GeometricScene extends Application {
 	 */
 	private VBox get_currentKitties() {
 		Text heading = new Text("Current Kitties");
-		VBox kittyHolder = new VBox();
+		VBox kittyHolder = new VBox(25);
 		for (int i = 0; i < kittyTracker.size(); i++) {
 			CheckBox visible = new CheckBox("visible");
 			visible.setSelected(true);
 			Button delete = new Button("delete");
-			HBox info = new HBox(kittyTracker.get(i).getCopyUI(), visible, delete); // add visibility and deletion
+			HBox info = new HBox(25, kittyTracker.get(i).getCopyUI(), visible, delete); // add visibility and deletion
 			kittyHolder.getChildren().add(info);
 		}
 		
 		VBox container = new VBox(heading, kittyHolder);
+		container.setPrefWidth(300.00);
 		return container;
 	}
 	
@@ -184,18 +206,7 @@ public class GeometricScene extends Application {
 	 * @return double - a random valid X coordinate
 	 */
 	private double randomX() {
-		double num = 50 + Math.random() * ((WIDTH-75) - 50 + 1);
-		for (int i = 0; i < kittyTracker.size(); i++) {
-			double loc = kittyTracker.get(i).getX();
-			if (num == loc) {
-				return randomX();
-			} else if ((num - loc) <= 5.00 || (num - loc) >= -5.00) {
-				return randomX();
-			} else if ((loc - num) <= 5.00 || (loc - num) >= -5.00) {
-				return randomX();
-			}
-		}
-		return num;
+		return 50 + Math.random() * ((WIDTH-75) - 50 + 1);
 	}
 	
 	/**
@@ -204,18 +215,7 @@ public class GeometricScene extends Application {
 	 * @return double - a random valid Y coordinate
 	 */
 	private double randomY(Ground g) {
-		double num = g.getHeight() + Math.random() * ((HEIGHT-75) - g.getHeight() + 1);
-		for (int i = 0; i < kittyTracker.size(); i++) {
-			double loc = kittyTracker.get(i).getY();
-			if (num == loc) {
-				return randomY(g);
-			} else if ((num - loc) <= 5.00 || (num - loc) >= -5.00) {
-				return randomX();
-			} else if ((loc - num) <= 5.00 || (loc - num) >= -5.00) {
-				return randomX();
-			}
-		}
-		return num;
+		return g.getHeight() + Math.random() * ((HEIGHT-75) - g.getHeight() + 1);
 	}
 	
 	private int randomRGB() {
@@ -230,7 +230,7 @@ public class GeometricScene extends Application {
 		return (int)(1 + Math.random() * (2 - 1 + 1));
 	}
 	
-	private class kittyChoices implements EventHandler<ActionEvent> {
+	private class KittyChoices implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
 			if (e.getSource() == tall) {
@@ -249,21 +249,33 @@ public class GeometricScene extends Application {
 		}
 	}
 	
-	private class kittyCreator implements EventHandler<ActionEvent> {
+	private class KittyCreator implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
-			if (e.getSource() == createBtn) {
+			if (e.getSource() == createBtn && kittyTracker.size() < 8) {
 				if (isTall && !isSmol) {
 					if (isThicc) {
 						// create tall thicc kitty
+						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 2, 2);
+						kittyTracker.add(cat);
+						center.getChildren().addAll(cat);
 					} else if (isHungry) {
 						// create tall hungry kitty
+						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 1, 2);
+						kittyTracker.add(cat);
+						center.getChildren().addAll(cat);
 					}
 				} else if (isSmol && !isTall) {
 					if (isThicc) {
 						// create smol thicc kitty
+						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 1, 2);
+						kittyTracker.add(cat);
+						center.getChildren().addAll(cat);
 					} else if (isHungry) {
 						// create smol hungry kitty
+						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 1, 1);
+						kittyTracker.add(cat);
+						center.getChildren().addAll(cat);
 					}
 				}
 				smol.setSelected(false);
@@ -274,6 +286,7 @@ public class GeometricScene extends Application {
 				isTall = false;
 				isThicc = false;
 				isHungry = false;
+				root.setRight(get_currentKitties());
 			}
 		}
 	}

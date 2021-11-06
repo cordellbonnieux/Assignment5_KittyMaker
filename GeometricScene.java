@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -33,8 +34,10 @@ import javafx.stage.Stage;
 
 
 public class GeometricScene extends Application {
+	// width and height for graphical image
 	private final int HEIGHT = 800;
 	private final int WIDTH = 1200;
+	private Ground foreground = new Ground();
 	// top controls
 	private CheckBox pyramidCheckBox;
 	private CheckBox moonCheckBox;
@@ -44,6 +47,7 @@ public class GeometricScene extends Application {
 	private RadioButton smol;
 	private RadioButton thicc;
 	private RadioButton hungry;
+	private Button createBtn = new Button("Create A Kitty");
 	// bottom right control groups
 	private ToggleGroup kittyWidth;
 	private ToggleGroup kittyHeight;
@@ -51,7 +55,9 @@ public class GeometricScene extends Application {
 	private ArrayList<Kitty> kittyTracker = new ArrayList<Kitty>();
 	// create a kitty temp variables
 	private boolean isTall;
+	private boolean isSmol;
 	private boolean isThicc;
+	private boolean isHungry;
 	
 	/**
 	 * Launch Application
@@ -76,8 +82,7 @@ public class GeometricScene extends Application {
 		
 		HBox bottomArea = new HBox(get_bgControls(), get_kittyControls());
 		
-		// add some components to display
-		Ground foreground = new Ground();
+		
 		
 		// create random coordinates for kitty
 		Kitty sickie = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize(), randomSize());
@@ -114,6 +119,11 @@ public class GeometricScene extends Application {
 		
 	}
 	
+	/**
+	 * Current Kitties
+	 * Builds a GUI list of all current kitties created
+	 * @return VBox - UI element containing the current kitties
+	 */
 	private VBox get_currentKitties() {
 		Text heading = new Text("Current Kitties");
 		VBox kittyHolder = new VBox();
@@ -165,7 +175,6 @@ public class GeometricScene extends Application {
 		VBox kittyMakerR = new VBox(thicc, hungry);
 
 		HBox top = new HBox(kittyMakerL, kittyMakerR);
-		Button createBtn = new Button("Create A Kitty");
 		VBox container = new VBox(top,createBtn);
 		return container;
 	}
@@ -180,9 +189,9 @@ public class GeometricScene extends Application {
 			double loc = kittyTracker.get(i).getX();
 			if (num == loc) {
 				return randomX();
-			} else if ((num - loc) <= 50.00 || (num - loc) >= -50.00) {
+			} else if ((num - loc) <= 5.00 || (num - loc) >= -5.00) {
 				return randomX();
-			} else if ((loc - num) <= 50.00 || (loc - num) >= -50.00) {
+			} else if ((loc - num) <= 5.00 || (loc - num) >= -5.00) {
 				return randomX();
 			}
 		}
@@ -200,13 +209,17 @@ public class GeometricScene extends Application {
 			double loc = kittyTracker.get(i).getY();
 			if (num == loc) {
 				return randomY(g);
-			} else if ((num - loc) <= 50.00 || (num - loc) >= -50.00) {
+			} else if ((num - loc) <= 5.00 || (num - loc) >= -5.00) {
 				return randomX();
-			} else if ((loc - num) <= 50.00 || (loc - num) >= -50.00) {
+			} else if ((loc - num) <= 5.00 || (loc - num) >= -5.00) {
 				return randomX();
 			}
 		}
 		return num;
+	}
+	
+	private int randomRGB() {
+		return (int)(1 + Math.random() * (255 - 1 + 1));
 	}
 	
 	/**
@@ -214,20 +227,54 @@ public class GeometricScene extends Application {
 	 * @return double - a random valid size scale
 	 */
 	private int randomSize() {
-		return (int)(0.5 + Math.random() * (3 - 0.5 + 1));
+		return (int)(1 + Math.random() * (2 - 1 + 1));
 	}
 	
 	private class kittyChoices implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
-			
+			if (e.getSource() == tall) {
+				isTall = true;
+				isSmol = false;
+			} else if (e.getSource() == smol) {
+				isTall = false;
+				isSmol = true;
+			} else if (e.getSource() == thicc) {
+				isThicc = true;
+				isHungry = false;
+			} else if (e.getSource() == hungry) {
+				isThicc = false;
+				isHungry = true;
+			}
 		}
 	}
 	
 	private class kittyCreator implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
-			
+			if (e.getSource() == createBtn) {
+				if (isTall && !isSmol) {
+					if (isThicc) {
+						// create tall thicc kitty
+					} else if (isHungry) {
+						// create tall hungry kitty
+					}
+				} else if (isSmol && !isTall) {
+					if (isThicc) {
+						// create smol thicc kitty
+					} else if (isHungry) {
+						// create smol hungry kitty
+					}
+				}
+				smol.setSelected(false);
+				tall.setSelected(false);
+				thicc.setSelected(false);
+				hungry.setSelected(false);
+				isSmol = false;
+				isTall = false;
+				isThicc = false;
+				isHungry = false;
+			}
 		}
 	}
 	
@@ -417,11 +464,11 @@ public class GeometricScene extends Application {
 		}
 		
 		public double getX() {
-			return posX;
+			return this.posX;
 		}
 		
 		public double getY() {
-			return posY;
+			return this.posY;
 		}
 	}
 }

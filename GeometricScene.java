@@ -29,12 +29,10 @@ import javafx.stage.Stage;
  * @author Cordell Bonnieux
  * 
  */
-
-//FXML
-// used to refactor javafx!
-
-
 public class GeometricScene extends Application {
+	/*
+	 * LAYOUT ELEMENTS
+	 */
 	// width and height for graphical image
 	private final int HEIGHT = 800;
 	private final int WIDTH = 1200;
@@ -43,10 +41,16 @@ public class GeometricScene extends Application {
 	private Ground foreground = new Ground();
 	private Background background = new Background(300, 300);
 	private Pane center = new Pane();
+	/*
+	 * BACKGROUND CONTROL
+	 */
 	// top controls
 	private CheckBox pyramidCheckBox;
 	private CheckBox moonCheckBox;
 	private CheckBox nightCheckBox;
+	/*
+	 * KITTY ELEMENTS
+	 */
 	// bottom right controls
 	private RadioButton tall;
 	private RadioButton smol;
@@ -60,6 +64,9 @@ public class GeometricScene extends Application {
 	private ToggleGroup kittyHeight;
 	// Keep track of spawned kitties
 	private ArrayList<Kitty> kittyTracker = new ArrayList<Kitty>();
+	// Keep track of spawned kitty controls
+	private ArrayList<CheckBox> kittyVisibilityTracker = new ArrayList<CheckBox>();
+	private ArrayList<Button> kittyDeleteTracker = new ArrayList<Button>();
 	// create a kitty temp variables
 	private boolean isTall;
 	private boolean isSmol;
@@ -82,24 +89,26 @@ public class GeometricScene extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 
-		root.setPadding(new Insets(10));
 		
 		InitializeCenterImage();
+		InitializeMainPane(stage);
+		InitializeKittyCreatorControls();
 
-		//HBox bottomArea = new HBox(get_bgControls(), get_kittyControls());
+		
+	}
+	
+	/**
+	 * Initialize the main border pane
+	 * @param stage Stage
+	 */
+	private void InitializeMainPane(Stage stage) {
+		root.setPadding(new Insets(10));
 		root.setRight(get_currentKitties());
 		root.setBottom(new HBox(get_bgControls(), get_kittyControls()));
-		
-		// cannot align double nested items
-		//bottomArea.setAlignment(Pos.BASELINE_CENTER);
-
-		InitializeKittyCreatorControls();
-		
 		Scene scene = new Scene(root);
 		stage.setTitle("Kitty Maker");
 		stage.setScene(scene);
 		stage.show();
-		
 	}
 	
 	/**
@@ -136,14 +145,24 @@ public class GeometricScene extends Application {
 		Text heading = new Text("Current Kitties");
 		VBox kittyHolder = new VBox(25);
 		for (int i = 0; i < kittyTracker.size(); i++) {
+			KittyChoices handler = new KittyChoices();
+			
 			CheckBox visible = new CheckBox("visible");
 			visible.setSelected(true);
+			visible.setOnAction(handler);
+			kittyVisibilityTracker.add(visible);
+			
+			
 			Button delete = new Button("delete");
-			HBox info = new HBox(25, kittyTracker.get(i).getCopyUI(), visible, delete); // add visibility and deletion
+			delete.setOnAction(handler);
+			kittyDeleteTracker.add(delete);
+			
+			HBox info = new HBox(25, kittyTracker.get(i).getCopyUI(), kittyVisibilityTracker.get(i), kittyDeleteTracker.get(i));
 			kittyHolder.getChildren().add(info);
 		}
-		
-		VBox container = new VBox(heading, kittyHolder);
+		Text numOfKitties = new Text(kittyTracker.size() + "/8");
+		HBox topText = new HBox(heading, numOfKitties);
+		VBox container = new VBox(topText, kittyHolder);
 		container.setPrefWidth(300.00);
 		BorderPane.setMargin(container, new Insets(0, 10, 0, 10));
 		return container;
@@ -196,7 +215,7 @@ public class GeometricScene extends Application {
 		VBox kittyMakerR = new VBox(thicc, hungry);
 
 		HBox container = new HBox(25, kittyMakerL, kittyMakerR, createBtn);
-		HBox.setMargin(container, new Insets(0, 0, 0, 820));
+		//HBox.setMargin(container, new Insets(0, 0, 0, 820));
 		return container;
 	}
 	
@@ -229,6 +248,11 @@ public class GeometricScene extends Application {
 		return (int)(1 + Math.random() * (2 - 1 + 1));
 	}
 	
+	/**
+	 * Background Editor
+	 * Event Listeners for background changing elements
+	 *
+	 */
 	private class BackgroundEditor implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
@@ -281,6 +305,21 @@ public class GeometricScene extends Application {
 			} else if (e.getSource() == hungry) {
 				isThicc = false;
 				isHungry = true;
+			}
+			for (int i = 0; i < kittyTracker.size(); i++) {
+				if (e.getSource() == kittyVisibilityTracker.get(i)) {
+					if (kittyVisibilityTracker.get(i).isSelected()) {
+						kittyTracker.get(i).setVisible(true);
+					} else {
+						kittyTracker.get(i).setVisible(false);
+					}
+				} else if (e.getSource() == kittyDeleteTracker.get(i)) {
+					kittyTracker.get(i).setVisible(false);
+					kittyTracker.remove(i);
+					kittyVisibilityTracker.remove(i);
+					kittyDeleteTracker.remove(i);
+					root.setRight(get_currentKitties());
+				}
 			}
 		}
 	}

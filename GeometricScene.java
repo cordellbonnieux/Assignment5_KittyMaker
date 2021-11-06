@@ -41,6 +41,7 @@ public class GeometricScene extends Application {
 	// UI Elements
 	private BorderPane root = new BorderPane();
 	private Ground foreground = new Ground();
+	private Background background = new Background(300, 300);
 	private Pane center = new Pane();
 	// top controls
 	private CheckBox pyramidCheckBox;
@@ -52,6 +53,8 @@ public class GeometricScene extends Application {
 	private RadioButton thicc;
 	private RadioButton hungry;
 	private Button createBtn = new Button("Create A Kitty");
+	private KittyChoices kittyType = new KittyChoices();
+	private KittyCreator spawnKitty = new KittyCreator();
 	// bottom right control groups
 	private ToggleGroup kittyWidth;
 	private ToggleGroup kittyHeight;
@@ -78,60 +81,20 @@ public class GeometricScene extends Application {
 	 */
 	@Override
 	public void start(Stage stage) throws Exception {
-		
 
-		// 1. Create a border pane
-		
 		root.setPadding(new Insets(10));
 		
+		InitializeCenterImage();
 
-		
-		
-		
-		
 		HBox bottomArea = new HBox(get_bgControls(), get_kittyControls());
-		
-		
-		
-		// create random coordinates for kitty
-		//Kitty sickie = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize(), randomSize());
-		//Kitty moro = new Kitty(Color.BLACK, Color.YELLOW, randomX(), randomY(foreground), randomSize(), randomSize());
-		//Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize(), randomSize());
-		
-		//kittyTracker.add(sickie);
-		//kittyTracker.add(moro);
-		//kittyTracker.add(sylvester);
-		
 
-		
-		center.getChildren().addAll(new Background(300, 300), foreground);
-		center.setPrefHeight(HEIGHT);
-		center.setPrefWidth(WIDTH);
-		Rectangle clip = new Rectangle(0,0,WIDTH, HEIGHT);
-		center.setClip(clip);
-		center.setPadding(new Insets(10));
-		
-		// add components to border pane
-		root.setCenter(center);
 		root.setRight(get_currentKitties());
 		root.setBottom(bottomArea);
 		
-		// wierd but ok, align the bottom
 		// cannot align double nested items
-		bottomArea.setAlignment(Pos.CENTER_RIGHT);
-		
-		
-		// set event listeners
-		KittyChoices kittyType = new KittyChoices();
-		tall.setOnAction(kittyType);
-		smol.setOnAction(kittyType);
-		thicc.setOnAction(kittyType);
-		hungry.setOnAction(kittyType);
-		
-		KittyCreator spawnKitty = new KittyCreator();
-		createBtn.setOnAction(spawnKitty);
-		
-		
+		//bottomArea.setAlignment(Pos.CENTER_RIGHT);
+
+		InitializeKittyCreatorControls();
 		
 		Scene scene = new Scene(root);
 		stage.setTitle("Kitty Maker");
@@ -140,6 +103,25 @@ public class GeometricScene extends Application {
 		
 	}
 	
+	private void InitializeKittyCreatorControls() {
+		tall.setOnAction(kittyType);
+		smol.setOnAction(kittyType);
+		thicc.setOnAction(kittyType);
+		hungry.setOnAction(kittyType);
+		createBtn.setOnAction(spawnKitty);
+	}
+	
+	private void InitializeCenterImage() {
+		center.setPrefHeight(HEIGHT);
+		center.setPrefWidth(WIDTH);
+		center.setPadding(new Insets(10));
+		center.getChildren().addAll(background, foreground);
+		
+		Rectangle clip = new Rectangle(0,0,WIDTH, HEIGHT);
+		center.setClip(clip);
+		
+		root.setCenter(center);
+	}
 	/**
 	 * Current Kitties
 	 * Builds a GUI list of all current kitties created
@@ -268,7 +250,7 @@ public class GeometricScene extends Application {
 				} else if (isSmol && !isTall) {
 					if (isThicc) {
 						// create smol thicc kitty
-						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 1, 2);
+						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 2, 1);
 						kittyTracker.add(cat);
 						center.getChildren().addAll(cat);
 					} else if (isHungry) {

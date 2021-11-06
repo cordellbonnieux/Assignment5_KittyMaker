@@ -1,11 +1,18 @@
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
@@ -20,13 +27,31 @@ import javafx.stage.Stage;
  * @author Cordell Bonnieux
  * 
  */
+
+//FXML
+// used to refactor javafx!
+
+
 public class GeometricScene extends Application {
 	private final int HEIGHT = 800;
 	private final int WIDTH = 1200;
-	//add controls as data members
+	// top controls
 	private CheckBox pyramidCheckBox;
 	private CheckBox moonCheckBox;
 	private CheckBox starsCheckBox;
+	// bottom right controls
+	private RadioButton tall;
+	private RadioButton smol;
+	private RadioButton thicc;
+	private RadioButton hungry;
+	// bottom right control groups
+	private ToggleGroup kittyWidth;
+	private ToggleGroup kittyHeight;
+	// Keep track of spawned kitties
+	private ArrayList<Kitty> kittyTracker = new ArrayList<Kitty>();
+	// create a kitty temp variables
+	private boolean isTall;
+	private boolean isThicc;
 	
 	/**
 	 * Launch Application
@@ -44,26 +69,12 @@ public class GeometricScene extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		
-		// add program title
-		stage.setTitle("Cordell's Geometric Scene");
-		
+
 		// 1. Create a border pane
 		BorderPane root = new BorderPane();
-		root.setPadding(new Insets(5));
-		// 2. create buttons to control back ground
-		Text topText = new Text("Toggle Background Elements:");
-		pyramidCheckBox = new CheckBox("Pyramid");
-		moonCheckBox = new CheckBox("Moon");
-		starsCheckBox = new CheckBox("Stars");
-		// 3. add those buttons to the top section
-		HBox topArea = new HBox(topText, pyramidCheckBox, moonCheckBox, starsCheckBox);
-		// 4. create a hbox to house the bottom elements
-		// 5. create radio buttons and button to spawn elements
-		// 6. add that whole package to the right side of the hbox
-		// 7. create a 'current sprites' view for the left side of hbox
+		root.setPadding(new Insets(10));
 		
-		//create pane and scene components
-		//Pane root = new Pane(); 
+		HBox bottomArea = new HBox(get_bgControls(), get_kittyControls());
 		
 		// add some components to display
 		Ground foreground = new Ground();
@@ -73,21 +84,90 @@ public class GeometricScene extends Application {
 		Kitty moro = new Kitty(Color.BLACK, Color.YELLOW, randomX(), randomY(foreground), randomSize());
 		Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize());
 		
+		kittyTracker.add(sickie);
+		kittyTracker.add(moro);
+		kittyTracker.add(sylvester);
+		
 		// add components to pane
 		Pane center = new Pane();
-		center.getChildren().addAll(new Background(300, 300), foreground, sickie, moro, sylvester);
+		center.getChildren().addAll(new Background(300, 300), foreground, sickie, moro, sylvester); //
+		center.setPrefHeight(HEIGHT);
+		center.setPrefWidth(WIDTH);
+		Rectangle clip = new Rectangle(0,0,WIDTH, HEIGHT);
+		center.setClip(clip);
+		center.setPadding(new Insets(10));
+		
+		// add components to border pane
 		root.setCenter(center);
-		root.setTop(topArea);
+		root.setRight(get_currentKitties());
+		root.setBottom(bottomArea);
 		
-		// add root pane to a scene
-		Scene scene = new Scene(root, WIDTH, HEIGHT);
+		// wierd but ok, align the bottom
+		// cannot align double nested items
+		bottomArea.setAlignment(Pos.CENTER_RIGHT);
 		
-		// set the stage with the scene
+		
+		Scene scene = new Scene(root);
+		stage.setTitle("Cordell's Geometric Scene");
 		stage.setScene(scene);
-		
-		// display the scene on the stage
 		stage.show();
 		
+	}
+	
+	private VBox get_currentKitties() {
+		Text heading = new Text("Current Kitties");
+		VBox kittyHolder = new VBox();
+		for (int i = 0; i < kittyTracker.size(); i++) {
+			CheckBox visible = new CheckBox("visible");
+			visible.setSelected(true);
+			Button delete = new Button("delete");
+			HBox info = new HBox(kittyTracker.get(i).getCopyUI(), visible, delete); // add visibility and deletion
+			kittyHolder.getChildren().add(info);
+		}
+		
+		VBox container = new VBox(heading, kittyHolder);
+		return container;
+	}
+	
+	/**
+	 * Background Controls
+	 * Checkboxes to control background elements via GUI
+	 * @return HBox containing control UI elements
+	 */
+	private HBox get_bgControls() {
+		Text bgText = new Text("Toggle Background Elements:");
+		pyramidCheckBox = new CheckBox("Pyramid");
+		moonCheckBox = new CheckBox("Moon");
+		starsCheckBox = new CheckBox("Stars");
+		HBox bgControls = new HBox(bgText, pyramidCheckBox, moonCheckBox, starsCheckBox);
+		return bgControls;
+	}
+	
+	/**
+	 * Kitty Maker Controls
+	 * Controls for instantiating new kitties
+	 * @return
+	 */
+	private VBox get_kittyControls() {
+		kittyHeight = new ToggleGroup();
+		tall = new RadioButton("tall");
+		smol = new RadioButton("smol");
+		smol.setToggleGroup(kittyHeight);
+		tall.setToggleGroup(kittyHeight);
+		
+		kittyWidth = new ToggleGroup();
+		thicc = new RadioButton("thicc");
+		hungry = new RadioButton("hungry");
+		thicc.setToggleGroup(kittyWidth);
+		hungry.setToggleGroup(kittyWidth);
+		
+		VBox kittyMakerL = new VBox(tall, smol);
+		VBox kittyMakerR = new VBox(thicc, hungry);
+
+		HBox top = new HBox(kittyMakerL, kittyMakerR);
+		Button createBtn = new Button("Create A Kitty");
+		VBox container = new VBox(top,createBtn);
+		return container;
 	}
 	
 	/**
@@ -113,6 +193,20 @@ public class GeometricScene extends Application {
 	 */
 	private int randomSize() {
 		return (int)(0.5 + Math.random() * (3 - 0.5 + 1));
+	}
+	
+	private class kittyChoices implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent e) {
+			
+		}
+	}
+	
+	private class kittyCreator implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent e) {
+			
+		}
 	}
 	
 	/**
@@ -222,6 +316,13 @@ public class GeometricScene extends Application {
 		private Polygon earRight;
 		private Line innerEyeRight;
 		private Line innerEyeLeft;
+		// Store User Preferences
+		private Color colorOne;
+		private Color colorTwo;
+		private double posX;
+		private double posY;
+		private double sizeX;
+		private double sizeY;
 
 		/**
 		 * Kitty
@@ -232,38 +333,45 @@ public class GeometricScene extends Application {
 		 * @param centerY double - center Y position for the kitty
 		 * @param scale int - scale of the kitty 
 		 */
-		public Kitty(Color mainColor, Color eyeColor, double centerX, double centerY, int scale) {
+		public Kitty(Color mainColor, Color eyeColor, double centerX, double centerY, double scaleX, double scaleY) {
+			colorOne = mainColor;
+			colorTwo = eyeColor;
+			posX = centerX;
+			posY = centerY;
+			sizeX = scaleX;
+			sizeY = scaleY;
+			
 			double radiusX = 90 * scale;
 			double radiusY = 40 * scale;
 			double[] range = new double[] {centerX-radiusX, centerX+radiusX, centerY-radiusY, centerY+radiusY};
 			
 			body = new Ellipse(centerX, centerY, radiusX, radiusY);
-			paw1 = new Ellipse(range[0] + radiusX/4, range[3] - radiusY/4, scale*15, scale*10);
-			paw3 = new Ellipse(range[1] - radiusX, range[3] - radiusY/10, scale*15, scale*10);
-			tail = new Ellipse(range[1] - radiusX/8, range[2], scale*12, scale*52);
-			head = new Ellipse(range[0] + radiusX/3, range[2] + radiusY/2, scale*40, scale*30);
-			paw2 = new Ellipse(range[0] + radiusX/1.75, range[3] - radiusY/8, scale*15, scale*10);
-			paw4 = new Ellipse(range[1] - radiusX/3, range[3] - radiusY/6, scale*15, scale*10);
-			eyeLeft = new Ellipse(range[0] + radiusX/8, range[2] + radiusY/2, scale*15, scale*10);
-			eyeRight = new Ellipse(range[0] + radiusX/2, range[2] + radiusY/2, scale*15, scale*10);
+			paw1 = new Ellipse(range[0] + radiusX/4, range[3] - radiusY/4, scaleX*15, scaleY*10);
+			paw3 = new Ellipse(range[1] - radiusX, range[3] - radiusY/10, scaleX*15, scaleY*10);
+			tail = new Ellipse(range[1] - radiusX/8, range[2], scaleX*12, scaleY*52);
+			head = new Ellipse(range[0] + radiusX/3, range[2] + radiusY/2, scaleX*40, scaleY*30);
+			paw2 = new Ellipse(range[0] + radiusX/1.75, range[3] - radiusY/8, scaleX*15, scaleY*10);
+			paw4 = new Ellipse(range[1] - radiusX/3, range[3] - radiusY/6, scaleX*15, scaleY*10);
+			eyeLeft = new Ellipse(range[0] + radiusX/8, range[2] + radiusY/2, scaleX*15, scaleY*10);
+			eyeRight = new Ellipse(range[0] + radiusX/2, range[2] + radiusY/2, scaleX*15, scaleY*10);
 			innerEyeLeft = new Line(range[0] + radiusX/8, range[2] + radiusY/3.5, range[0] + radiusX/8, range[2] + radiusY/1.5);
 			innerEyeRight = new Line(range[0] + radiusX/2, range[2] + radiusY/3.5, range[0] + radiusX/2, range[2] + radiusY/1.5);
 			earLeft = new Polygon();
 			earRight = new Polygon();
 			
-			innerEyeRight.setStrokeWidth(scale*4);
-			innerEyeLeft.setStrokeWidth(scale*4);
+			innerEyeRight.setStrokeWidth(scaleX*4);
+			innerEyeLeft.setStrokeWidth(scaleX*4);
 			
 			earLeft.getPoints().addAll(new Double[] {
-					centerX-(105*scale), centerY-(58*scale),
-					centerX-(75*scale), centerY-(48*scale),
-					centerX-(95*scale), centerY-(28*scale)
+					centerX-(105*scaleX), centerY-(58*scaleY),
+					centerX-(75*scaleX), centerY-(48*scaleY),
+					centerX-(95*scaleX), centerY-(28*scaleY)
 			});
 			
 			earRight.getPoints().addAll(new Double[] {
-					centerX-(15*scale), centerY-(58*scale),
-					centerX-(45*scale), centerY-(48*scale),
-					centerX-(20*scale), centerY-(28*scale)
+					centerX-(15*scaleX), centerY-(58*scaleY),
+					centerX-(45*scaleX), centerY-(48*scaleY),
+					centerX-(20*scaleX), centerY-(28*scaleY)
 			});
 			
 			paw1.setFill(mainColor);
@@ -279,6 +387,19 @@ public class GeometricScene extends Application {
 			eyeRight.setFill(eyeColor);
 			
 			getChildren().addAll(paw1,paw3,tail,body,head,paw2,paw4,earLeft,earRight,eyeLeft,eyeRight,innerEyeLeft,innerEyeRight);			
+		}
+		
+		public Kitty getCopyUI() {
+			Kitty copy = new Kitty(colorOne, colorTwo, posX, posY, 0.5);
+			return copy;
+		}
+		
+		public double getX() {
+			return posX;
+		}
+		
+		public double getY() {
+			return posY;
 		}
 	}
 }

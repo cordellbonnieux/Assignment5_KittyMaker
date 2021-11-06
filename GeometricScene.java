@@ -46,7 +46,7 @@ public class GeometricScene extends Application {
 	// top controls
 	private CheckBox pyramidCheckBox;
 	private CheckBox moonCheckBox;
-	private CheckBox starsCheckBox;
+	private CheckBox nightCheckBox;
 	// bottom right controls
 	private RadioButton tall;
 	private RadioButton smol;
@@ -86,13 +86,12 @@ public class GeometricScene extends Application {
 		
 		InitializeCenterImage();
 
-		HBox bottomArea = new HBox(get_bgControls(), get_kittyControls());
-
+		//HBox bottomArea = new HBox(get_bgControls(), get_kittyControls());
 		root.setRight(get_currentKitties());
-		root.setBottom(bottomArea);
+		root.setBottom(new HBox(get_bgControls(), get_kittyControls()));
 		
 		// cannot align double nested items
-		//bottomArea.setAlignment(Pos.CENTER_RIGHT);
+		//bottomArea.setAlignment(Pos.BASELINE_CENTER);
 
 		InitializeKittyCreatorControls();
 		
@@ -103,6 +102,9 @@ public class GeometricScene extends Application {
 		
 	}
 	
+	/**
+	 * Initialize Event Listeners for Kitty Creator.
+	 */
 	private void InitializeKittyCreatorControls() {
 		tall.setOnAction(kittyType);
 		smol.setOnAction(kittyType);
@@ -111,6 +113,9 @@ public class GeometricScene extends Application {
 		createBtn.setOnAction(spawnKitty);
 	}
 	
+	/**
+	 * Paint the Image to the center pane region.
+	 */
 	private void InitializeCenterImage() {
 		center.setPrefHeight(HEIGHT);
 		center.setPrefWidth(WIDTH);
@@ -140,6 +145,7 @@ public class GeometricScene extends Application {
 		
 		VBox container = new VBox(heading, kittyHolder);
 		container.setPrefWidth(300.00);
+		BorderPane.setMargin(container, new Insets(0, 10, 0, 10));
 		return container;
 	}
 	
@@ -149,11 +155,22 @@ public class GeometricScene extends Application {
 	 * @return HBox containing control UI elements
 	 */
 	private HBox get_bgControls() {
+		BackgroundEditor bgChooser = new BackgroundEditor();
 		Text bgText = new Text("Toggle Background Elements:");
+		
 		pyramidCheckBox = new CheckBox("Pyramid");
 		moonCheckBox = new CheckBox("Moon");
-		starsCheckBox = new CheckBox("Stars");
-		HBox bgControls = new HBox(bgText, pyramidCheckBox, moonCheckBox, starsCheckBox);
+		nightCheckBox = new CheckBox("Night");
+		
+		pyramidCheckBox.setSelected(true);
+		moonCheckBox.setSelected(true);
+		nightCheckBox.setSelected(true);
+		
+		pyramidCheckBox.setOnAction(bgChooser);
+		moonCheckBox.setOnAction(bgChooser);
+		nightCheckBox.setOnAction(bgChooser);
+		
+		HBox bgControls = new HBox(bgText, pyramidCheckBox, nightCheckBox, moonCheckBox);
 		return bgControls;
 	}
 	
@@ -162,7 +179,7 @@ public class GeometricScene extends Application {
 	 * Controls for instantiating new kitties
 	 * @return
 	 */
-	private VBox get_kittyControls() {
+	private HBox get_kittyControls() {
 		kittyHeight = new ToggleGroup();
 		tall = new RadioButton("tall");
 		smol = new RadioButton("smol");
@@ -178,8 +195,8 @@ public class GeometricScene extends Application {
 		VBox kittyMakerL = new VBox(tall, smol);
 		VBox kittyMakerR = new VBox(thicc, hungry);
 
-		HBox top = new HBox(kittyMakerL, kittyMakerR);
-		VBox container = new VBox(top,createBtn);
+		HBox container = new HBox(25, kittyMakerL, kittyMakerR, createBtn);
+		HBox.setMargin(container, new Insets(0, 0, 0, 820));
 		return container;
 	}
 	
@@ -212,6 +229,43 @@ public class GeometricScene extends Application {
 		return (int)(1 + Math.random() * (2 - 1 + 1));
 	}
 	
+	private class BackgroundEditor implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent e) {
+			if (e.getSource() == pyramidCheckBox) {
+				if (background.pyramidLeft.isVisible() && background.pyramidRight.isVisible()) {
+					background.setPyramidVisible(false);
+					pyramidCheckBox.setSelected(false);
+				} else {
+					background.setPyramidVisible(true);
+					pyramidCheckBox.setSelected(true);
+				}
+			} else if (e.getSource() == moonCheckBox) {
+				if (background.moon.isVisible()) {
+					background.moon.setVisible(false);
+					moonCheckBox.setSelected(false);
+				} else {
+					background.moon.setVisible(true);
+					moonCheckBox.setSelected(true);
+				}
+			} else if (e.getSource() == nightCheckBox) {
+				if (background.isNight()) {
+					background.setNight(false);
+					nightCheckBox.setSelected(false);
+					moonCheckBox.setText("Sun");
+				} else {
+					background.setNight(true);
+					nightCheckBox.setSelected(true);
+					moonCheckBox.setText("Moon");
+				}
+			}
+		}
+	}
+	
+	/**
+	 * KittyChoices
+	 * Used to handle radio checks on the Kitty Creator Panel
+	 */
 	private class KittyChoices implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
@@ -231,6 +285,10 @@ public class GeometricScene extends Application {
 		}
 	}
 	
+	/**
+	 * KittyCreator 
+	 * Handles Button down events for the kitty creator button and instantiates kitties.
+	 */
 	private class KittyCreator implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
@@ -248,12 +306,12 @@ public class GeometricScene extends Application {
 						center.getChildren().addAll(cat);
 					}
 				} else if (isSmol && !isTall) {
-					if (isThicc) {
+					if (isThicc && !isHungry) {
 						// create smol thicc kitty
 						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 2, 1);
 						kittyTracker.add(cat);
 						center.getChildren().addAll(cat);
-					} else if (isHungry) {
+					} else if (isHungry && !isThicc) {
 						// create smol hungry kitty
 						Kitty cat = new Kitty(Color.rgb(randomRGB(), randomRGB(), randomRGB()), Color.rgb(randomRGB(), randomRGB(), randomRGB()), randomX(), randomY(foreground), 1, 1);
 						kittyTracker.add(cat);
@@ -282,6 +340,8 @@ public class GeometricScene extends Application {
 		private Ellipse moon;
 		private Polygon pyramidLeft;
 		private Polygon pyramidRight;
+		private Color night = Color.rgb(0, 20, 64);
+		private Color day = Color.rgb(173, 213, 247);
 		 
 		/**
 		 * Class Constructor
@@ -290,7 +350,7 @@ public class GeometricScene extends Application {
 		 */
 		public Background(double px, double py) {
 			backdrop = new Rectangle((double)WIDTH, (double)HEIGHT);
-			backdrop.setFill(Color.rgb(0, 20, 64));
+			backdrop.setFill(night);
 			backdrop.setY(0);
 			backdrop.setX(0);
 			
@@ -318,6 +378,26 @@ public class GeometricScene extends Application {
 			});
 			
 			getChildren().addAll(backdrop, moon, pyramidLeft, pyramidRight);
+		}
+		public void setNight(boolean x) {
+			if (x == true) {
+				backdrop.setFill(night);
+			} else {
+				backdrop.setFill(day);
+			}
+		}
+		
+		public void setMoonVisible(boolean x) {
+			moon.setVisible(x);
+		}
+		
+		public void setPyramidVisible(boolean x) {
+			pyramidLeft.setVisible(x);
+			pyramidRight.setVisible(x);
+		}
+		
+		public boolean isNight() {
+			return (backdrop.getFill() == night) ? true : false;
 		}
 	}
 	
@@ -453,15 +533,27 @@ public class GeometricScene extends Application {
 			getChildren().addAll(paw1,paw3,tail,body,head,paw2,paw4,earLeft,earRight,eyeLeft,eyeRight,innerEyeLeft,innerEyeRight);			
 		}
 		
+		/**
+		 * Returns a mini duplicate of the caller's kitty (used for UI)
+		 * @return Kitty 
+		 */
 		public Kitty getCopyUI() {
 			Kitty copy = new Kitty(colorOne, colorTwo, posX, posY, 0.5, 0.5);
 			return copy;
 		}
 		
+		/**
+		 * Gets the X center pos
+		 * @return double X
+		 */
 		public double getX() {
 			return this.posX;
 		}
 		
+		/**
+		 * Gets the Y center pos
+		 * @return double Y
+		 */
 		public double getY() {
 			return this.posY;
 		}

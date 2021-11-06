@@ -80,9 +80,9 @@ public class GeometricScene extends Application {
 		Ground foreground = new Ground();
 		
 		// create random coordinates for kitty
-		Kitty sickie = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize());
-		Kitty moro = new Kitty(Color.BLACK, Color.YELLOW, randomX(), randomY(foreground), randomSize());
-		Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize());
+		Kitty sickie = new Kitty(Color.rgb(139, 197, 82), Color.rgb(238, 111, 158), randomX(), randomY(foreground), randomSize(), randomSize());
+		Kitty moro = new Kitty(Color.BLACK, Color.YELLOW, randomX(), randomY(foreground), randomSize(), randomSize());
+		Kitty sylvester = new Kitty(Color.DARKGREY, Color.RED, randomX(), randomY(foreground), randomSize(), randomSize());
 		
 		kittyTracker.add(sickie);
 		kittyTracker.add(moro);
@@ -175,7 +175,18 @@ public class GeometricScene extends Application {
 	 * @return double - a random valid X coordinate
 	 */
 	private double randomX() {
-		return 50 + Math.random() * ((WIDTH-75) - 50 + 1);
+		double num = 50 + Math.random() * ((WIDTH-75) - 50 + 1);
+		for (int i = 0; i < kittyTracker.size(); i++) {
+			double loc = kittyTracker.get(i).getX();
+			if (num == loc) {
+				return randomX();
+			} else if ((num - loc) <= 50.00 || (num - loc) >= -50.00) {
+				return randomX();
+			} else if ((loc - num) <= 50.00 || (loc - num) >= -50.00) {
+				return randomX();
+			}
+		}
+		return num;
 	}
 	
 	/**
@@ -184,7 +195,18 @@ public class GeometricScene extends Application {
 	 * @return double - a random valid Y coordinate
 	 */
 	private double randomY(Ground g) {
-		return g.getHeight() + Math.random() * ((HEIGHT-75) - g.getHeight() + 1);
+		double num = g.getHeight() + Math.random() * ((HEIGHT-75) - g.getHeight() + 1);
+		for (int i = 0; i < kittyTracker.size(); i++) {
+			double loc = kittyTracker.get(i).getY();
+			if (num == loc) {
+				return randomY(g);
+			} else if ((num - loc) <= 50.00 || (num - loc) >= -50.00) {
+				return randomX();
+			} else if ((loc - num) <= 50.00 || (loc - num) >= -50.00) {
+				return randomX();
+			}
+		}
+		return num;
 	}
 	
 	/**
@@ -341,8 +363,8 @@ public class GeometricScene extends Application {
 			sizeX = scaleX;
 			sizeY = scaleY;
 			
-			double radiusX = 90 * scale;
-			double radiusY = 40 * scale;
+			double radiusX = 90 * scaleX;
+			double radiusY = 40 * scaleY;
 			double[] range = new double[] {centerX-radiusX, centerX+radiusX, centerY-radiusY, centerY+radiusY};
 			
 			body = new Ellipse(centerX, centerY, radiusX, radiusY);
@@ -390,7 +412,7 @@ public class GeometricScene extends Application {
 		}
 		
 		public Kitty getCopyUI() {
-			Kitty copy = new Kitty(colorOne, colorTwo, posX, posY, 0.5);
+			Kitty copy = new Kitty(colorOne, colorTwo, posX, posY, 0.5, 0.5);
 			return copy;
 		}
 		

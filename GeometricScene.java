@@ -88,13 +88,9 @@ public class GeometricScene extends Application {
 	 */
 	@Override
 	public void start(Stage stage) throws Exception {
-
-		
 		InitializeCenterImage();
 		InitializeMainPane(stage);
 		InitializeKittyCreatorControls();
-
-		
 	}
 	
 	/**
@@ -102,6 +98,7 @@ public class GeometricScene extends Application {
 	 * @param stage Stage
 	 */
 	private void InitializeMainPane(Stage stage) {
+		root.setStyle("-fx-background-color:#AA3939;");
 		root.setPadding(new Insets(10));
 		root.setRight(get_currentKitties());
 		root.setBottom(new HBox(get_bgControls(), get_kittyControls()));
@@ -163,7 +160,7 @@ public class GeometricScene extends Application {
 		Text numOfKitties = new Text(kittyTracker.size() + "/8");
 		HBox topText = new HBox(heading, numOfKitties);
 		VBox container = new VBox(topText, kittyHolder);
-		container.setPrefWidth(300.00);
+		container.setPrefWidth(275.00);
 		BorderPane.setMargin(container, new Insets(0, 10, 0, 10));
 		return container;
 	}
@@ -189,7 +186,8 @@ public class GeometricScene extends Application {
 		moonCheckBox.setOnAction(bgChooser);
 		nightCheckBox.setOnAction(bgChooser);
 		
-		HBox bgControls = new HBox(bgText, pyramidCheckBox, nightCheckBox, moonCheckBox);
+		HBox bgControls = new HBox(10, bgText, pyramidCheckBox, nightCheckBox, moonCheckBox);
+		bgControls.setPrefWidth(WIDTH+10);
 		return bgControls;
 	}
 	
@@ -211,10 +209,10 @@ public class GeometricScene extends Application {
 		thicc.setToggleGroup(kittyWidth);
 		hungry.setToggleGroup(kittyWidth);
 		
-		VBox kittyMakerL = new VBox(tall, smol);
-		VBox kittyMakerR = new VBox(thicc, hungry);
+		VBox kittyMakerL = new VBox(10, tall, smol);
+		VBox kittyMakerR = new VBox(10, thicc, hungry);
 
-		HBox container = new HBox(25, kittyMakerL, kittyMakerR, createBtn);
+		HBox container = new HBox(20, kittyMakerL, kittyMakerR, createBtn);
 		//HBox.setMargin(container, new Insets(0, 0, 0, 820));
 		return container;
 	}
@@ -397,9 +395,9 @@ public class GeometricScene extends Application {
 			moon.setFill(Color.ORANGE);
 			
 			pyramidLeft = new Polygon();
-			pyramidLeft.setStroke(Color.rgb(19, 82, 171));
+			pyramidLeft.setStroke(Color.rgb(172, 96, 24)); //19, 82, 171
 			pyramidLeft.setStrokeWidth(2);
-			pyramidLeft.setFill(Color.rgb(150, 111, 214));
+			pyramidLeft.setFill(Color.rgb(210, 128, 49));
 			pyramidLeft.getPoints().addAll(new Double[] {
 					px, py,
 					px+75, (double)HEIGHT,
@@ -407,9 +405,9 @@ public class GeometricScene extends Application {
 			});
 			
 			pyramidRight = new Polygon();
-			pyramidRight.setStroke(Color.rgb(19, 82, 171));
+			pyramidRight.setStroke(Color.rgb(172, 96, 24)); //19, 82, 171
 			pyramidRight.setStrokeWidth(2);
-			pyramidRight.setFill(Color.rgb(183, 165, 217));
+			pyramidRight.setFill(Color.rgb(233, 158, 87)); //183, 165, 217
 			pyramidRight.getPoints().addAll(new Double[] {
 					px, py,
 					px+75, (double)HEIGHT,

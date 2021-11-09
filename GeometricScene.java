@@ -100,8 +100,13 @@ public class GeometricScene extends Application {
 	private void InitializeMainPane(Stage stage) {
 		root.setStyle("-fx-background-color:#ffffff;");
 		root.setPadding(new Insets(10));
+		
 		root.setRight(get_currentKitties());
-		root.setBottom(new HBox(get_bgControls(), get_kittyControls()));
+		
+		HBox bgControls = get_bgControls();
+		root.setBottom(new HBox(bgControls, get_kittyControls()));
+		HBox.setMargin(bgControls, new Insets(15, 0, 0, 0));
+		
 		Scene scene = new Scene(root);
 		stage.setTitle("Kitty Maker");
 		stage.setScene(scene);
@@ -153,11 +158,11 @@ public class GeometricScene extends Application {
 			
 			
 			Button delete = new Button("delete");
-			delete.setStyle("-fx-background-color:#fc284f; -fx-text-fill:#ffffff; -fx-border-width:1; -fx-border-color:##2c2c2c;");
+			delete.setStyle("-fx-background-color:#fc284f; -fx-text-fill:#ffffff; -fx-border-width:1; -fx-border-color:#2c2c2c;");
 			delete.setOnAction(handler);
 			kittyDeleteTracker.add(delete);
 			
-			HBox info = new HBox(20, kittyTracker.get(i).getCopyUI(), kittyVisibilityTracker.get(i), kittyDeleteTracker.get(i));
+			HBox info = new HBox(30, kittyTracker.get(i).getCopyUI(), kittyVisibilityTracker.get(i), kittyDeleteTracker.get(i));
 			info.setStyle("-fx-background-color:#ffffff; -fx-padding:5px; -fx-background-radius:4px; -fx-font-weight:bold;");
 			kittyHolder.getChildren().add(info);
 		}
@@ -166,7 +171,7 @@ public class GeometricScene extends Application {
 		numOfKitties.setFill(Color.rgb(252, 40, 78));
 		HBox topText = new HBox(10, heading, numOfKitties);
 		VBox container = new VBox(topText, kittyHolder);
-		container.setPrefWidth(304.00);
+		container.setPrefWidth(327.00);
 		container.setStyle("-fx-background-color:#F2F5F7; -fx-padding:5px; -fx-border-width:4px 4px 0px 4px; -fx-border-style:dotted; -fx-border-color:#ffffff;");
 		BorderPane.setMargin(container, new Insets(0, 10, 0, 10));
 		return container;
@@ -180,10 +185,16 @@ public class GeometricScene extends Application {
 	private HBox get_bgControls() {
 		BackgroundEditor bgChooser = new BackgroundEditor();
 		Text bgText = new Text("Toggle Background Elements:");
+		bgText.setStyle("-fx-font-size:1.1em; -fx-font-weight:bold;");
+		bgText.setFill(Color.rgb(44, 44, 44));
 		
 		pyramidCheckBox = new CheckBox("Pyramid");
 		moonCheckBox = new CheckBox("Moon");
 		nightCheckBox = new CheckBox("Night");
+		
+		pyramidCheckBox.setStyle("-fx-color:#d1d0d7; -fx-text-fill:#2c2c2c; -fx-font-weight:bold; -fx-border-width:1px;");
+		moonCheckBox.setStyle("-fx-color:#d1d0d7; -fx-text-fill:#2c2c2c; -fx-font-weight:bold; -fx-border-width:1px;");
+		nightCheckBox.setStyle("-fx-color:#d1d0d7; -fx-text-fill:#2c2c2c; -fx-font-weight:bold; -fx-border-width:1px;");
 		
 		pyramidCheckBox.setSelected(true);
 		moonCheckBox.setSelected(true);
@@ -206,21 +217,27 @@ public class GeometricScene extends Application {
 	private HBox get_kittyControls() {
 		kittyHeight = new ToggleGroup();
 		tall = new RadioButton("tall");
+		tall.setStyle("-fx-color:#d1d0d7; -fx-text-fill:#2c2c2c; -fx-font-weight:bold; -fx-border-width:1px;");
 		smol = new RadioButton("smol");
+		smol.setStyle("-fx-color:#d1d0d7; -fx-text-fill:#2c2c2c; -fx-font-weight:bold; -fx-border-width:1px;");
 		smol.setToggleGroup(kittyHeight);
 		tall.setToggleGroup(kittyHeight);
 		
 		kittyWidth = new ToggleGroup();
 		thicc = new RadioButton("thicc");
+		thicc.setStyle("-fx-color:#d1d0d7; -fx-text-fill:#2c2c2c; -fx-font-weight:bold; -fx-border-width:1px;");
 		hungry = new RadioButton("hungry");
+		hungry.setStyle("-fx-color:#d1d0d7; -fx-text-fill:#2c2c2c; -fx-font-weight:bold; -fx-border-width:1px;");
 		thicc.setToggleGroup(kittyWidth);
 		hungry.setToggleGroup(kittyWidth);
+		
+		createBtn.setStyle("-fx-background-color:#fc284f; -fx-text-fill:#ffffff; -fx-border-width:1; -fx-border-color:#2c2c2c; -fx-font-weight:bold;");
 		
 		VBox kittyMakerL = new VBox(10, tall, smol);
 		VBox kittyMakerR = new VBox(10, thicc, hungry);
 
 		HBox container = new HBox(20, kittyMakerL, kittyMakerR, createBtn);
-		container.setStyle("-fx-background-color:#DCE3E8; -fx-padding:10px; -fx-color:#fc284f; -fx-border-width:0px 4px 4px 4px; -fx-border-style:dotted; -fx-border-color:#ffffff;");
+		container.setStyle("-fx-background-color:#DCE3E8; -fx-padding:10px; -fx-border-width:0px 4px 4px 4px; -fx-border-style:dotted; -fx-border-color:#ffffff;");
 		//HBox.setMargin(container, new Insets(0, 0, 0, 820));
 		return container;
 	}

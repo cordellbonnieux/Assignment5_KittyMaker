@@ -98,7 +98,7 @@ public class GeometricScene extends Application {
 	 * @param stage Stage
 	 */
 	private void InitializeMainPane(Stage stage) {
-		root.setStyle("-fx-background-color:#AA3939;");
+		root.setStyle("-fx-background-color:#ffffff;");
 		root.setPadding(new Insets(10));
 		root.setRight(get_currentKitties());
 		root.setBottom(new HBox(get_bgControls(), get_kittyControls()));
@@ -129,8 +129,7 @@ public class GeometricScene extends Application {
 		center.getChildren().addAll(background, foreground);
 		
 		Rectangle clip = new Rectangle(0,0,WIDTH, HEIGHT);
-		center.setClip(clip);
-		
+		center.setClip(clip);		
 		root.setCenter(center);
 	}
 	/**
@@ -140,27 +139,35 @@ public class GeometricScene extends Application {
 	 */
 	private VBox get_currentKitties() {
 		Text heading = new Text("Current Kitties");
-		VBox kittyHolder = new VBox(25);
+		heading.setFill(Color.rgb(44, 44, 44));
+		heading.setStyle("-fx-font-weight:700; -fx-font-size:1.4em;");
+		VBox kittyHolder = new VBox(5);
 		for (int i = 0; i < kittyTracker.size(); i++) {
 			KittyChoices handler = new KittyChoices();
 			
 			CheckBox visible = new CheckBox("visible");
+			visible.setStyle("-fx-text-fill:#2c2c2c;");
 			visible.setSelected(true);
 			visible.setOnAction(handler);
 			kittyVisibilityTracker.add(visible);
 			
 			
 			Button delete = new Button("delete");
+			delete.setStyle("-fx-background-color:#fc284f; -fx-text-fill:#ffffff; -fx-border-width:1; -fx-border-color:##2c2c2c;");
 			delete.setOnAction(handler);
 			kittyDeleteTracker.add(delete);
 			
-			HBox info = new HBox(25, kittyTracker.get(i).getCopyUI(), kittyVisibilityTracker.get(i), kittyDeleteTracker.get(i));
+			HBox info = new HBox(20, kittyTracker.get(i).getCopyUI(), kittyVisibilityTracker.get(i), kittyDeleteTracker.get(i));
+			info.setStyle("-fx-background-color:#ffffff; -fx-padding:5px; -fx-background-radius:4px; -fx-font-weight:bold;");
 			kittyHolder.getChildren().add(info);
 		}
-		Text numOfKitties = new Text(kittyTracker.size() + "/8");
-		HBox topText = new HBox(heading, numOfKitties);
+		Text numOfKitties = new Text(kittyTracker.size() + "/9");
+		numOfKitties.setStyle("-fx-font-weight:700; -fx-font-size:1.4em;");
+		numOfKitties.setFill(Color.rgb(252, 40, 78));
+		HBox topText = new HBox(10, heading, numOfKitties);
 		VBox container = new VBox(topText, kittyHolder);
-		container.setPrefWidth(275.00);
+		container.setPrefWidth(304.00);
+		container.setStyle("-fx-background-color:#F2F5F7; -fx-padding:5px; -fx-border-width:4px 4px 0px 4px; -fx-border-style:dotted; -fx-border-color:#ffffff;");
 		BorderPane.setMargin(container, new Insets(0, 10, 0, 10));
 		return container;
 	}
@@ -213,6 +220,7 @@ public class GeometricScene extends Application {
 		VBox kittyMakerR = new VBox(10, thicc, hungry);
 
 		HBox container = new HBox(20, kittyMakerL, kittyMakerR, createBtn);
+		container.setStyle("-fx-background-color:#DCE3E8; -fx-padding:10px; -fx-color:#fc284f; -fx-border-width:0px 4px 4px 4px; -fx-border-style:dotted; -fx-border-color:#ffffff;");
 		//HBox.setMargin(container, new Insets(0, 0, 0, 820));
 		return container;
 	}
@@ -329,7 +337,7 @@ public class GeometricScene extends Application {
 	private class KittyCreator implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
-			if (e.getSource() == createBtn && kittyTracker.size() < 8) {
+			if (e.getSource() == createBtn && kittyTracker.size() < 9) {
 				if (isTall && !isSmol) {
 					if (isThicc) {
 						// create tall thicc kitty

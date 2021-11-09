@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,8 +23,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
- * Gemometric Scene
- * A simple gemotric scene with scale-able randomly placed kitties.
+ * Kitty Maker
+ * A simple program that allows you to create custom scale kitties on a scenic north-African inspired landscape.
+ * Created kitties will appear on the image, as well as the right side UI display, from there the user can set the
+ * visibility or delete the kitty. There are a maximum of 9 kitties allowed on the screen at one time. 
+ * The background elements are also toggle-able via the bottom pane of the UI.
  * @author Cordell Bonnieux
  * 
  */
@@ -109,6 +111,7 @@ public class GeometricScene extends Application {
 		
 		Scene scene = new Scene(root);
 		stage.setTitle("Kitty Maker");
+		stage.setResizable(false);
 		stage.setScene(scene);
 		stage.show();
 	}
@@ -170,7 +173,7 @@ public class GeometricScene extends Application {
 		numOfKitties.setStyle("-fx-font-weight:700; -fx-font-size:1.4em;");
 		numOfKitties.setFill(Color.rgb(252, 40, 78));
 		HBox topText = new HBox(10, heading, numOfKitties);
-		VBox container = new VBox(topText, kittyHolder);
+		VBox container = new VBox(10, topText, kittyHolder);
 		container.setPrefWidth(327.00);
 		container.setStyle("-fx-background-color:#F2F5F7; -fx-padding:5px; -fx-border-width:4px 4px 0px 4px; -fx-border-style:dotted; -fx-border-color:#ffffff;");
 		BorderPane.setMargin(container, new Insets(0, 10, 0, 10));
@@ -238,7 +241,6 @@ public class GeometricScene extends Application {
 
 		HBox container = new HBox(20, kittyMakerL, kittyMakerR, createBtn);
 		container.setStyle("-fx-background-color:#DCE3E8; -fx-padding:10px; -fx-border-width:0px 4px 4px 4px; -fx-border-style:dotted; -fx-border-color:#ffffff;");
-		//HBox.setMargin(container, new Insets(0, 0, 0, 820));
 		return container;
 	}
 	
@@ -265,8 +267,10 @@ public class GeometricScene extends Application {
 	
 	/**
 	 * Random Size
+	 * Used for previous assignment, keeping for potential later use.
 	 * @return double - a random valid size scale
 	 */
+	@SuppressWarnings("unused")
 	private int randomSize() {
 		return (int)(1 + Math.random() * (2 - 1 + 1));
 	}
@@ -420,7 +424,7 @@ public class GeometricScene extends Application {
 			moon.setFill(Color.ORANGE);
 			
 			pyramidLeft = new Polygon();
-			pyramidLeft.setStroke(Color.rgb(172, 96, 24)); //19, 82, 171
+			pyramidLeft.setStroke(Color.rgb(172, 96, 24));
 			pyramidLeft.setStrokeWidth(2);
 			pyramidLeft.setFill(Color.rgb(210, 128, 49));
 			pyramidLeft.getPoints().addAll(new Double[] {
@@ -430,9 +434,9 @@ public class GeometricScene extends Application {
 			});
 			
 			pyramidRight = new Polygon();
-			pyramidRight.setStroke(Color.rgb(172, 96, 24)); //19, 82, 171
+			pyramidRight.setStroke(Color.rgb(172, 96, 24));
 			pyramidRight.setStrokeWidth(2);
-			pyramidRight.setFill(Color.rgb(233, 158, 87)); //183, 165, 217
+			pyramidRight.setFill(Color.rgb(233, 158, 87));
 			pyramidRight.getPoints().addAll(new Double[] {
 					px, py,
 					px+75, (double)HEIGHT,
@@ -449,6 +453,7 @@ public class GeometricScene extends Application {
 			}
 		}
 		
+		@SuppressWarnings("unused")
 		public void setMoonVisible(boolean x) {
 			moon.setVisible(x);
 		}
@@ -505,7 +510,6 @@ public class GeometricScene extends Application {
 	/**
 	 * Kitty
 	 * Used to create foreground objects
-	 * @author cordell
 	 *
 	 */
 	private class Kitty extends Group {
@@ -527,7 +531,10 @@ public class GeometricScene extends Application {
 		private Color colorTwo;
 		private double posX;
 		private double posY;
+		// To later implement moving kitties
+		@SuppressWarnings("unused")
 		private double sizeX;
+		@SuppressWarnings("unused")
 		private double sizeY;
 
 		/**
@@ -606,16 +613,20 @@ public class GeometricScene extends Application {
 		
 		/**
 		 * Gets the X center pos
+		 * To later implement moving kitties
 		 * @return double X
 		 */
+		@SuppressWarnings("unused")
 		public double getX() {
 			return this.posX;
 		}
 		
 		/**
 		 * Gets the Y center pos
+		 * * To later implement moving kitties
 		 * @return double Y
 		 */
+		@SuppressWarnings("unused")
 		public double getY() {
 			return this.posY;
 		}
